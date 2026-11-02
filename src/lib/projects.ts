@@ -53,6 +53,8 @@ export type Project = {
   status: ProjectStatus;
   /** Where the running app can be tried, if it is online. */
   liveUrl?: string;
+  /** The running app on made-up data with no sign-in, opened inside the screen tour by "Try it yourself". */
+  demoUrl?: string;
   /** More screenshots, shown in a gallery on the project page. */
   screens?: Screen[];
   /** Why the project exists: the problem it answers. */
@@ -92,6 +94,7 @@ export const projects: Project[] = [
       "CA Mode dashboard in dark mode: portfolio value, total invested, today's change and returns, an asset allocation ring, a one-year performance chart, top holdings, goals, AI insights and quick actions.",
     status: "hosted",
     liveUrl: "https://129-225-97-229.sslip.io/",
+    demoUrl: "https://129-225-97-229.sslip.io/?demo",
     screens: [
       {
         image: caModeChat,
