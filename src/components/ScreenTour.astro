@@ -6,6 +6,8 @@ import type { Screen } from "@/lib/projects";
 type Props = { screens: Screen[]; label: string; liveUrl?: string; demoUrl?: string; class?: string };
 
 const { screens, label, liveUrl, demoUrl, class: className } = Astro.props;
+/** Wide enough for the app's full layout (it drops its right-hand panel at 1280px and below). */
+const APP_WIDTH = 1440;
 const host = liveUrl ? new URL(liveUrl).host : undefined;
 const button =
   "inline-flex min-h-11 items-center justify-center gap-2 rounded-md border px-5 text-sm font-medium transition-colors duration-200";
@@ -89,14 +91,16 @@ const button =
               ))
             }
           </ul>
-          {/* Filled in on "Try it yourself", so the app only loads for visitors who ask for it. */}
-          <iframe
-            data-live
-            data-src={demoUrl ?? liveUrl}
-            hidden
-            title={`${label}: live app`}
-            class="col-start-1 row-start-1 size-full bg-obsidian"
-            referrerpolicy="no-referrer"></iframe>
+          {/* Filled in on "Try it yourself", so the app only loads for visitors who ask for it. It runs at
+              desktop size, where the app shows its full layout, and is scaled down to fill the window. */}
+          <div data-live hidden class="relative col-start-1 row-start-1 overflow-hidden bg-obsidian">
+            <iframe
+              data-src={demoUrl ?? liveUrl}
+              title={`${label}: live app`}
+              style={`width: ${APP_WIDTH}px; height: ${APP_WIDTH * 10 / 16}px`}
+              class="absolute left-0 top-0 origin-top-left scale-(--fit)"
+              referrerpolicy="no-referrer"></iframe>
+          </div>
         </div>
       </div>
 
@@ -186,7 +190,8 @@ const button =
   for (const root of document.querySelectorAll<HTMLElement>("[data-tour]")) {
     const steps = [...root.querySelectorAll<HTMLElement>("[data-step]")];
     const slides = [...root.querySelectorAll<HTMLElement>("[data-slide]")];
-    const live = root.querySelector<HTMLIFrameElement>("[data-live]")!;
+    const live = root.querySelector<HTMLElement>("[data-live]")!;
+    const app = live.querySelector("iframe")!;
     const tryButton = root.querySelector<HTMLButtonElement>("[data-try]");
     const backButton = root.querySelector<HTMLButtonElement>("[data-back]");
     const openLink = root.querySelector<HTMLAnchorElement>("[data-open]");
@@ -216,7 +221,7 @@ const button =
     steps.forEach((step) => observer.observe(step));
 
     const setLive = (on: boolean) => {
-      if (on && !live.src) live.src = live.dataset.src!;
+      if (on && !app.src) app.src = app.dataset.src!;
       live.hidden = !on;
       tryButton!.hidden = on;
       backButton!.hidden = !on;
@@ -225,6 +230,8 @@ const button =
       root.querySelector<HTMLElement>('[data-note="live"]')!.hidden = !on;
       (on ? backButton : tryButton)!.focus();
     };
+
+    new ResizeObserver(() => live.style.setProperty("--fit", String(live.clientWidth / app.offsetWidth))).observe(live);
 
     tryButton?.addEventListener("click", () => setLive(true));
     backButton?.addEventListener("click", () => setLive(false));
