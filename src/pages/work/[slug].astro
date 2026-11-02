@@ -9,7 +9,7 @@ import PricingPlans from "@/components/PricingPlans.astro";
 import ProjectSection from "@/components/ProjectSection.astro";
 import ProjectStatusBadge from "@/components/ProjectStatusBadge.astro";
 import ProjectTags from "@/components/ProjectTags.astro";
-import ScreenSlideshow from "@/components/ScreenSlideshow.astro";
+import ScreenTour from "@/components/ScreenTour.astro";
 import SiteFooter from "@/components/SiteFooter.astro";
 import SiteHeader from "@/components/SiteHeader.astro";
 import { siteConfig } from "@/config/site";
@@ -155,7 +155,7 @@ const structuredData = {
         {
           project.screens && (
             <div id="screens" class="mb-16 scroll-mt-24">
-              <ScreenSlideshow screens={project.screens} label={`${project.title} screens`} />
+              <ScreenTour screens={project.screens} label={`${project.title} screens`} liveUrl={project.liveUrl} />
             </div>
           )
         }
